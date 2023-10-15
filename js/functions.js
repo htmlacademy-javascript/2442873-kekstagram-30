@@ -6,7 +6,7 @@ function stringLength(str, symbols) {
   return str.length <= symbols;
 }
 
-console.log(stringLength(example, 30));
+stringLength(example, 30);
 
 
 // проверка на полиндром
@@ -19,4 +19,4 @@ function checkPalindrome(str) {
   return str === str.split('').reverse().join('');
 }
 
-console.log(checkPalindrome(exemple));
+checkPalindrome(exemple);
