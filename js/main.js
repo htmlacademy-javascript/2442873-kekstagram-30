@@ -1,4 +1,3 @@
-import './util';
 import { getPictures } from './data';
 import { renderPictures } from './thumbnail.js';
 
