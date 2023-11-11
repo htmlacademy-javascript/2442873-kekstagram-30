@@ -44,11 +44,14 @@ const createElement = () => {
   const photoId = generatePhotoId();
   return {
     id: photoId,
-    url: `img/${getRandomInteger(MIN_RANDOM_INTENGER_IMG, MAX_RANDOM_INTENGER_IMG)}.svg`,
+    url: `photos/${getRandomInteger(MIN_RANDOM_INTENGER_IMG, MAX_RANDOM_INTENGER_IMG)}.jpg`,
     likes: getRandomInteger(LIKES_COUNT_MIN, LIKES_COUNT_MAX),
     description: getRandomArrayElement(PHOTO_DESCRIPTIONS),
     comments: Array.from({ length: getRandomInteger(MIN_RANDOM_INTENGER_COMENT, MAX_RANDOM_INTENGER_COMENT) }, createComment)
   };
 };
 
-export {createElement};
+const CREATE_ELEMENT_LENGTH = 25;
+const getPictures = () => Array.from({ length: CREATE_ELEMENT_LENGTH }, createElement);
+
+export {getPictures};
