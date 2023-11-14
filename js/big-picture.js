@@ -45,7 +45,7 @@ const renderPictureInfo = (index, pictures) => {
 };
 
 const openBigPicture = (index, pictures) => {
-  socialCommentsElement.innerHTML = '';
+  socialCommentsElement.innerTEXT = '';
   bigPictureElement.classList.remove('hidden');
   document.addEventListener('keydown', onDocumentKeydown);
   bodyElement.classList.add('modal-open');
@@ -63,7 +63,7 @@ const onPictureClick = (evt, pictures) => {
   }
 };
 
-const closeBigPictureModal = () => {
+const onCloseBigPictureModal = () => {
   bigPictureElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
 
@@ -75,15 +75,13 @@ const initPictureListeners = (pictures) => {
     onPictureClick(evt, pictures);
   });
 
-  cancelPictureElement.addEventListener('click', () => {
-    closeBigPictureModal();
-  });
+  cancelPictureElement.addEventListener('click', onCloseBigPictureModal);
 };
 
 function onDocumentKeydown (evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closeBigPictureModal();
+    onCloseBigPictureModal();
   }
 }
 
