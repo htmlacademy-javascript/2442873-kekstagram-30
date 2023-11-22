@@ -1,11 +1,13 @@
-import '../vendor/pristine/pristine.min.js';
+
 import { isEscapeKey } from './util.js';
+import { resetScale, initScaleControlListener } from './scale-picture.js';
+import { resetEffect, initEffectListener } from './picture-effect.js';
 
 const bodyElement = document.querySelector('body');
-const pictureInputElement = document.querySelector('.img-upload__input');
-const pictureOverlayElement = document.querySelector('.img-upload__overlay');
-const uploadCancelElement = document.querySelector('#upload-cancel');
 const pictureFormElement = document.querySelector('.img-upload__form');
+const pictureInputElement = pictureFormElement.querySelector('.img-upload__input');
+const pictureOverlayElement = pictureFormElement.querySelector('.img-upload__overlay');
+const uploadCancelElement = pictureFormElement.querySelector('#upload-cancel');
 const hashtagInputElement = pictureFormElement.querySelector('.text__hashtags');
 const commentTextAreaElement = pictureFormElement.querySelector('.text__description');
 
@@ -65,7 +67,7 @@ const addValidators = () => {
   pristine.addValidator(
     hashtagInputElement,
     isHashtagValid,
-    'Введён невалидный хэш-тег'
+    'Введён невалидный хэш-тег',
   );
 
   pristine.addValidator(
@@ -91,6 +93,9 @@ const closePictureForm = () => {
   pictureInputElement.value = '';
   hashtagInputElement.value = '';
   commentTextAreaElement.value = '';
+  pristine.reset();
+  resetScale();
+  resetEffect();
   pictureOverlayElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
@@ -132,5 +137,8 @@ function onDocumentKeydown (evt) {
     closePictureForm();
   }
 }
+
+initEffectListener();
+initScaleControlListener();
 
 export { initPictureFormListener };
