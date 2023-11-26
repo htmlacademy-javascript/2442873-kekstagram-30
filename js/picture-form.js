@@ -1,9 +1,18 @@
 
 import { isEscapeKey } from './util.js';
-import { resetScale, initScaleControlListener } from './scale-picture.js';
-import { resetEffect, initEffectListener } from './picture-effect.js';
+import { resetScale, initScaleControlListener } from './scale.js';
+import { resetEffect, initEffectListener } from './effect.js';
 import { sendPicture } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
+
+const REG_EXP = /^#[a-zа-яё0-9]{1,19}$/i;
+const HASHTAG_LENGTH_COUNT = 5;
+const COMMENT_LENGTH_COUNT = 140;
+
+const SubmitButtonCaption = {
+  SUBMITING: 'Отправляю...',
+  IDLE: 'Отправить'
+};
 
 const bodyElement = document.querySelector('body');
 const pictureFormElement = document.querySelector('.img-upload__form');
@@ -15,14 +24,6 @@ const commentTextAreaElement = pictureFormElement.querySelector('.text__descript
 const submitButtonElement = pictureFormElement.querySelector('.img-upload__submit');
 const errorElement = document.querySelector('.error');
 
-const REG_EXP = /^#[a-zа-яё0-9]{1,19}$/i;
-const HASHTAG_LENGTH_COUNT = 5;
-const COMMENT_LENGTH_COUNT = 140;
-
-const SubmitButtonCaption = {
-  SUBMITING: 'Отправляю...',
-  IDLE: 'Отправить'
-};
 
 const toggleSubmitButton = (isDisabled) => {
   submitButtonElement.disabled = isDisabled;
@@ -40,43 +41,19 @@ const pristine = new Pristine(pictureFormElement, {
   errorTextParent: 'img-upload__field-wrapper',
   errorTextClass: 'img-upload__field-wrapper--error',
 });
-const isHashtagValid = (value) => {
-  if (value !== '') {
-    const hashtags = value.split(' ');
 
-    for (const hashtag of hashtags) {
-      if (!REG_EXP.test(hashtag)) {
-        return false;
-      }
-    }
-  }
+const normalizeTags = (tags) => tags.trim().split(' ').filter((tag) => Boolean(tag.length));
 
-  return true;
-};
+const isHashtagValid = (value) => normalizeTags(value).every((tag) => REG_EXP.test(tag));
 
 const isHashtagUnique = (value) => {
-  const hashtags = value.split(' ');
-
-  const uniqueHashtags = new Set();
-
-  for (const hashtag of hashtags) {
-    const lowercaseHashtag = hashtag.toLowerCase();
-    if (uniqueHashtags.has(lowercaseHashtag)) {
-      return false;
-    }
-
-    uniqueHashtags.add(lowercaseHashtag);
-  }
-
-  return true;
+  const lowerCaseHashtag = normalizeTags(value).map((tag) => tag.toLowerCase());
+  return lowerCaseHashtag.length === new Set(lowerCaseHashtag).size;
 };
 
-const validateHashtagsLength = (value) => {
-  const hashtags = value.split(' ');
-  return hashtags.length <= HASHTAG_LENGTH_COUNT;
-};
+const validateHashtagsLength = (value) => normalizeTags(value).length <= HASHTAG_LENGTH_COUNT;
 
-const validateComment = (comment) => comment.length <= COMMENT_LENGTH_COUNT;
+const validateComment = (comment) => comment.trim().length <= COMMENT_LENGTH_COUNT;
 const addValidators = () => {
   pristine.addValidator(
     hashtagInputElement,
