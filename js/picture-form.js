@@ -2,6 +2,8 @@
 import { isEscapeKey } from './util.js';
 import { resetScale, initScaleControlListener } from './scale-picture.js';
 import { resetEffect, initEffectListener } from './picture-effect.js';
+import { sendPicture } from './api.js';
+import { showSuccessMessage, showErrorMessage } from './messages.js';
 
 const bodyElement = document.querySelector('body');
 const pictureFormElement = document.querySelector('.img-upload__form');
@@ -10,10 +12,22 @@ const pictureOverlayElement = pictureFormElement.querySelector('.img-upload__ove
 const uploadCancelElement = pictureFormElement.querySelector('#upload-cancel');
 const hashtagInputElement = pictureFormElement.querySelector('.text__hashtags');
 const commentTextAreaElement = pictureFormElement.querySelector('.text__description');
+const submitButtonElement = pictureFormElement.querySelector('.img-upload__submit');
+const errorElement = document.querySelector('.error');
 
 const REG_EXP = /^#[a-zа-яё0-9]{1,19}$/i;
 const HASHTAG_LENGTH_COUNT = 5;
 const COMMENT_LENGTH_COUNT = 140;
+
+const SubmitButtonCaption = {
+  SUBMITING: 'Отправляю...',
+  IDLE: 'Отправить'
+};
+
+const toggleSubmitButton = (isDisabled) => {
+  submitButtonElement.disabled = isDisabled;
+  submitButtonElement.textContent = isDisabled ? SubmitButtonCaption.SUBMITING : SubmitButtonCaption.IDLE;
+};
 
 const openPictureForm = () => {
   pictureOverlayElement.classList.remove('hidden');
@@ -101,15 +115,44 @@ const closePictureForm = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-const initPictureFormListener = () => {
-  pictureInputElement.addEventListener('change', () => {
-    openPictureForm();
-    addValidators();
-  });
+const onOpenPictureForm = () => {
+  openPictureForm();
+  addValidators();
+  initEffectListener();
+  initScaleControlListener();
+};
 
-  uploadCancelElement.addEventListener('click', () => {
+const onClosePictureForm = () => {
+  closePictureForm();
+};
+
+const submitForm = async (pictureData) => {
+  if (!pristine.validate()) {
+    return;
+  }
+
+  try {
+    toggleSubmitButton(true);
+    await sendPicture(new FormData(pictureData));
+    toggleSubmitButton(false);
     closePictureForm();
-  });
+    showSuccessMessage();
+  } catch {
+    showErrorMessage();
+    toggleSubmitButton(false);
+  }
+};
+
+const onSumbitPictureForm = (evt) => {
+  evt.preventDefault();
+  submitForm(evt.target);
+};
+
+const initPictureFormListener = () => {
+  pictureInputElement.addEventListener('change', onOpenPictureForm);
+
+  uploadCancelElement.addEventListener('click', onClosePictureForm);
+
 
   hashtagInputElement.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
@@ -123,22 +166,17 @@ const initPictureFormListener = () => {
     }
   });
 
-  pictureFormElement.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    if (pristine.validate()) {
-      closePictureForm();
-    }
-  });
+  pictureFormElement.addEventListener('submit', onSumbitPictureForm);
 };
 
+const isErrorMessageExist = () => Boolean(errorElement);
+
 function onDocumentKeydown (evt) {
-  if (isEscapeKey(evt)) {
+  if (isEscapeKey(evt) && !isErrorMessageExist()) {
     evt.preventDefault();
     closePictureForm();
   }
 }
 
-initEffectListener();
-initScaleControlListener();
 
 export { initPictureFormListener };
