@@ -1,13 +1,14 @@
+const SCALE_DEFAULT = 100;
+const SCALE_MIN = 25;
+const SCALE_STEP_COUNT = 25;
+const SCALE_MAX = 100;
+
 const pictureFormElement = document.querySelector('.img-upload__form');
 const scaleControlSmallerElement = pictureFormElement.querySelector('.scale__control--smaller');
 const scaleControlBiggerElement = pictureFormElement.querySelector('.scale__control--bigger');
 const scaleControlValueElement = pictureFormElement.querySelector('.scale__control--value');
 const imagePreviewElement = pictureFormElement.querySelector('.img-upload__preview img');
 
-const SCALE_DEFAULT = 100;
-const SCALE_MIN = 25;
-const SCALE_STEP_COUNT = 25;
-const SCALE_MAX = 100;
 
 const scalePicture = (value) => {
   scaleControlValueElement.value = `${value}%`;
