@@ -1,16 +1,17 @@
 
-import { isEscapeKey } from './util.js';
+import { isEscapeKey } from './utils.js';
 import { resetScale, initScaleControlListener } from './scale.js';
 import { resetEffect, initEffectListener } from './effect.js';
 import { sendPicture } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
 
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 const REG_EXP = /^#[a-zа-яё0-9]{1,19}$/i;
 const HASHTAG_LENGTH_COUNT = 5;
 const COMMENT_LENGTH_COUNT = 140;
 
 const SubmitButtonCaption = {
-  SUBMITING: 'Отправляю...',
+  SUBMITTING: 'Отправляю...',
   IDLE: 'Отправить'
 };
 
@@ -22,12 +23,17 @@ const uploadCancelElement = pictureFormElement.querySelector('#upload-cancel');
 const hashtagInputElement = pictureFormElement.querySelector('.text__hashtags');
 const commentTextAreaElement = pictureFormElement.querySelector('.text__description');
 const submitButtonElement = pictureFormElement.querySelector('.img-upload__submit');
-const errorElement = document.querySelector('.error');
-
+const picturePreviewElement = pictureFormElement.querySelector('.img-upload__preview img');
+const effectsPreviewElement = pictureFormElement.querySelectorAll('.effects__preview');
 
 const toggleSubmitButton = (isDisabled) => {
   submitButtonElement.disabled = isDisabled;
-  submitButtonElement.textContent = isDisabled ? SubmitButtonCaption.SUBMITING : SubmitButtonCaption.IDLE;
+  submitButtonElement.textContent = isDisabled ? SubmitButtonCaption.SUBMITTING : SubmitButtonCaption.IDLE;
+};
+
+const isValidType = (file) => {
+  const fileName = file.name.toLowerCase();
+  return FILE_TYPES.some((it) => fileName.endsWith(it));
 };
 
 const openPictureForm = () => {
@@ -54,6 +60,7 @@ const isHashtagUnique = (value) => {
 const validateHashtagsLength = (value) => normalizeTags(value).length <= HASHTAG_LENGTH_COUNT;
 
 const validateComment = (comment) => comment.trim().length <= COMMENT_LENGTH_COUNT;
+
 const addValidators = () => {
   pristine.addValidator(
     hashtagInputElement,
@@ -64,7 +71,7 @@ const addValidators = () => {
   pristine.addValidator(
     hashtagInputElement,
     isHashtagUnique,
-    'Хэш-теги повторяются'
+    'Хэш-теги повторяются',
   );
 
   pristine.addValidator(
@@ -92,14 +99,23 @@ const closePictureForm = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-const onOpenPictureForm = () => {
+const onFormOpen = () => {
+  const file = pictureInputElement.files[0];
+
+  if (file && isValidType(file)) {
+    picturePreviewElement.src = URL.createObjectURL(file);
+    effectsPreviewElement.forEach((effect) => {
+      effect.style.backgroundImage = `url('${picturePreviewElement.src}')`;
+    });
+  }
+
   openPictureForm();
   addValidators();
   initEffectListener();
   initScaleControlListener();
 };
 
-const onClosePictureForm = () => {
+const onFormClose = () => {
   closePictureForm();
 };
 
@@ -120,16 +136,15 @@ const submitForm = async (pictureData) => {
   }
 };
 
-const onSumbitPictureForm = (evt) => {
+const onFormSubmit = (evt) => {
   evt.preventDefault();
   submitForm(evt.target);
 };
 
 const initPictureFormListener = () => {
-  pictureInputElement.addEventListener('change', onOpenPictureForm);
+  pictureInputElement.addEventListener('change', onFormOpen);
 
-  uploadCancelElement.addEventListener('click', onClosePictureForm);
-
+  uploadCancelElement.addEventListener('click', onFormClose);
 
   hashtagInputElement.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
@@ -143,10 +158,10 @@ const initPictureFormListener = () => {
     }
   });
 
-  pictureFormElement.addEventListener('submit', onSumbitPictureForm);
+  pictureFormElement.addEventListener('submit', onFormSubmit);
 };
 
-const isErrorMessageExist = () => Boolean(errorElement);
+const isErrorMessageExist = () => Boolean(document.querySelector('.error'));
 
 function onDocumentKeydown (evt) {
   if (isEscapeKey(evt) && !isErrorMessageExist()) {
@@ -154,6 +169,5 @@ function onDocumentKeydown (evt) {
     closePictureForm();
   }
 }
-
 
 export { initPictureFormListener };

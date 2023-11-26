@@ -1,5 +1,6 @@
 import { debounce } from './utils.js';
 import { showPictures } from './thumbnail.js';
+import { initPictureListeners } from './big-picture.js';
 
 const FilterType = {
   DEFAULT: 'default',
@@ -21,14 +22,18 @@ const filters = {
   [FilterType.DISCUSSED]: (pictures) => pictures.slice().sort((item1, item2) => item2.comments.length - item1.comments.length)
 };
 
+const toggleActiveClass = (evt) => {
+  const currentFilterElement = document.querySelector('.img-filters__button--active');
+  currentFilterElement.classList.remove('img-filters__button--active');
+  evt.target.classList.add('img-filters__button--active');
+};
+
 const setFilter = (evt, filter, pictures) => {
   const filteredPictures = filters[filter](pictures);
   const picturesElement = document.querySelectorAll('.picture');
   picturesElement.forEach((picture) => picture.remove());
   showPictures(filteredPictures);
-  const currentFilterElement = document.querySelector('.img-filters__button--active');
-  currentFilterElement.classList.remove('img-filters__button--active');
-  evt.target.classList.add('img-filters__button--active');
+  initPictureListeners(filteredPictures);
 };
 
 const debouncedSetFilters = debounce(setFilter);
@@ -37,12 +42,15 @@ const initFilters = (pictures) => {
   pictureFilterElement.classList.remove('img-filters--inactive');
   filterDefaultElement.addEventListener('click', (evt) => {
     debouncedSetFilters(evt, FilterType.DEFAULT, pictures);
+    toggleActiveClass(evt);
   });
   filterRandomElement.addEventListener('click', (evt) => {
     debouncedSetFilters(evt, FilterType.RANDOM, pictures);
+    toggleActiveClass(evt);
   });
   filterDiscussedElement.addEventListener('click', (evt) => {
     debouncedSetFilters(evt, FilterType.DISCUSSED, pictures);
+    toggleActiveClass(evt);
   });
 };
 
