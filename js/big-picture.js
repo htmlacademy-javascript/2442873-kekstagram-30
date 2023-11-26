@@ -14,21 +14,23 @@ const commentsShownElement = commentCountElement.querySelector('.social__comment
 const commentsLoaderElement = document.querySelector('.comments-loader');
 
 const COMMENT_COUNTER = 5;
+const AVATAR_IMG_WIDTH = 35;
+const AVATAR_IMG_HEIGHT = 35;
 
-const createCommentElement = (comment) => {
+const createCommentElement = ({avatar, name, message}) => {
   const commentElement = document.createElement('li');
   commentElement.classList.add('social__comment');
 
   const avatarImgElement = document.createElement('img');
   avatarImgElement.classList.add('social__picture');
-  avatarImgElement.src = comment.avatar;
-  avatarImgElement.alt = comment.name;
-  avatarImgElement.width = 35;
-  avatarImgElement.height = 35;
+  avatarImgElement.src = avatar;
+  avatarImgElement.alt = name;
+  avatarImgElement.width = AVATAR_IMG_WIDTH;
+  avatarImgElement.height = AVATAR_IMG_HEIGHT;
 
   const socialTextElement = document.createElement('p');
   socialTextElement.classList.add('social__text');
-  socialTextElement.textContent = comment.message;
+  socialTextElement.textContent = message;
 
   commentElement.appendChild(avatarImgElement);
   commentElement.appendChild(socialTextElement);
@@ -90,19 +92,23 @@ const openBigPicture = (index, pictures) => {
 };
 
 const onPictureClick = (evt, pictures) => {
-  if (evt.target.closest('a.picture')) {
-    const linkElement = evt.target.closest('a.picture');
+  const linkElement = evt.target.closest('a.picture');
+  if (linkElement) {
     const pictureElements = Array.from(document.querySelectorAll('.picture'));
     const index = pictureElements.indexOf(linkElement);
     openBigPicture(index, pictures);
   }
 };
 
-const onCloseBigPictureModal = () => {
+const closeBigPictureModal = () => {
   bigPictureElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
 
   document.removeEventListener('keydown', onDocumentKeydown);
+};
+
+const onCloseBigPicture = () => {
+  closeBigPictureModal();
 };
 
 const initPictureListeners = (pictures) => {
@@ -110,13 +116,13 @@ const initPictureListeners = (pictures) => {
     onPictureClick(evt, pictures);
   });
 
-  cancelPictureElement.addEventListener('click', onCloseBigPictureModal);
+  cancelPictureElement.addEventListener('click', onCloseBigPicture);
 };
 
 function onDocumentKeydown (evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    onCloseBigPictureModal();
+    closeBigPictureModal();
   }
 }
 
