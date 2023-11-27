@@ -7,7 +7,6 @@ const errorLoadPicturesElement = document.querySelector('#data-error').content.q
 const successMessageElement = document.querySelector('#success').content.querySelector('.success');
 const errorMessageElement = document.querySelector('#error').content.querySelector('.error');
 
-
 const showLoadErrorMessage = () => {
   const errorTextElement = errorLoadPicturesElement.cloneNode(true);
   bodyElement.append(errorTextElement);
@@ -24,7 +23,7 @@ const hideMessage = () => {
   bodyElement.removeEventListener('click', onBodyClick);
 };
 
-const onCloseMessageButton = () => {
+const onMessageButtonClose = () => {
   hideMessage();
 };
 
@@ -32,7 +31,7 @@ const showMessage = (element, classButton) => {
   bodyElement.append(element);
   bodyElement.addEventListener('click', onBodyClick);
   document.addEventListener('keydown', onDocumentKeydown);
-  element.querySelector(classButton).addEventListener('click', onCloseMessageButton);
+  element.querySelector(classButton).addEventListener('click', onMessageButtonClose);
 };
 
 const showSuccessMessage = () => {
@@ -51,7 +50,7 @@ function onDocumentKeydown (evt) {
 }
 
 function onBodyClick (evt) {
-  if (evt.target.closest === '.success__inner' || evt.target.closest === '.error__inner') {
+  if (evt.target.closest('.success__inner') || evt.target.closest('.error__inner')) {
     return;
   }
 

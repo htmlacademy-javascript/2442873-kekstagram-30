@@ -9,7 +9,6 @@ const scaleControlBiggerElement = pictureFormElement.querySelector('.scale__cont
 const scaleControlValueElement = pictureFormElement.querySelector('.scale__control--value');
 const imagePreviewElement = pictureFormElement.querySelector('.img-upload__preview img');
 
-
 const scalePicture = (value) => {
   scaleControlValueElement.value = `${value}%`;
   imagePreviewElement.style.transform = `scale(${value / 100})`;
@@ -24,6 +23,7 @@ const onBiggerButtonClick = () => {
   const value = Math.min(parseInt(scaleControlValueElement.value, 10) + SCALE_STEP_COUNT, SCALE_MAX);
   scalePicture(value);
 };
+
 const initScaleControlListener = () => {
   scaleControlSmallerElement.addEventListener('click', onSmallerButtonClick);
   scaleControlBiggerElement.addEventListener('click', onBiggerButtonClick);

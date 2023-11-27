@@ -4,19 +4,18 @@ const COMMENT_COUNTER = 5;
 const AVATAR_IMG_WIDTH = 35;
 const AVATAR_IMG_HEIGHT = 35;
 
+const bodyElement = document.querySelector('body');
 const picturesElement = document.querySelector('.pictures');
 const bigPictureElement = document.querySelector('.big-picture');
-const bodyElement = document.querySelector('body');
 const cancelPictureElement = document.querySelector('#picture-cancel');
 const pictureImgElement = document.querySelector('.big-picture__img img');
 const pictureLikesCountElement = document.querySelector('.likes-count');
 const pictureDescriptionElement = document.querySelector('.social__caption');
-const commentCountElement = document.querySelector('.social__comment-count');
-const commentsCountTotalElement = document.querySelector('.social__comment-total-count');
 const socialCommentsElement = document.querySelector('.social__comments');
+const commentCountElement = document.querySelector('.social__comment-count');
+const commentsCountTotalElement = commentCountElement.querySelector('.social__comment-total-count');
 const commentsShownElement = commentCountElement.querySelector('.social__comment-shown-count');
 const commentsLoaderElement = document.querySelector('.comments-loader');
-
 
 const createCommentElement = ({avatar, name, message}) => {
   const commentElement = document.createElement('li');
@@ -85,10 +84,11 @@ const renderPictureInfo = (index, pictures) => {
 };
 
 const openBigPicture = (index, pictures) => {
-  socialCommentsElement.innerTEXT = '';
+  socialCommentsElement.innerHTML = '';
   bigPictureElement.classList.remove('hidden');
   document.addEventListener('keydown', onDocumentKeydown);
   bodyElement.classList.add('modal-open');
+
   renderPictureInfo(index, pictures);
 };
 
@@ -97,6 +97,7 @@ const onPictureClick = (evt, pictures) => {
   if (linkElement) {
     const pictureElements = Array.from(document.querySelectorAll('.picture'));
     const index = pictureElements.indexOf(linkElement);
+
     openBigPicture(index, pictures);
   }
 };
@@ -108,7 +109,7 @@ const closeBigPictureModal = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-const onCloseBigPicture = () => {
+const onPictureClose = () => {
   closeBigPictureModal();
 };
 
@@ -117,7 +118,7 @@ const initPictureListeners = (pictures) => {
     onPictureClick(evt, pictures);
   });
 
-  cancelPictureElement.addEventListener('click', onCloseBigPicture);
+  cancelPictureElement.addEventListener('click', onPictureClose);
 };
 
 function onDocumentKeydown (evt) {
