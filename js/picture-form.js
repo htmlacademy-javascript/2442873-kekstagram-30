@@ -1,5 +1,5 @@
 
-import { isEscapeKey } from './utils.js';
+import { isEscapeKey } from './util.js';
 import { resetScale, initScaleControlListener } from './scale.js';
 import { resetEffect, initEffectListener } from './effect.js';
 import { sendPicture } from './api.js';

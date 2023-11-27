@@ -1,4 +1,4 @@
-import { debounce } from './utils.js';
+import { debounce } from './util.js';
 import { showPictures } from './thumbnail.js';
 import { initPictureListeners } from './big-picture.js';
 
@@ -8,7 +8,7 @@ const FilterType = {
   DISCUSSED: 'discussed'
 };
 
-const RANDOM_FITLER_COUNT = 10;
+const RANDOM_FILTER_COUNT = 10;
 const RANDOM_OFFSET = 0.5;
 
 const filterDefaultElement = document.querySelector('#filter-default');
@@ -18,7 +18,7 @@ const pictureFilterElement = document.querySelector('.img-filters');
 
 const filters = {
   [FilterType.DEFAULT]: (pictures) => pictures,
-  [FilterType.RANDOM]: (pictures) => pictures.slice().sort(() => Math.random() - RANDOM_OFFSET).slice(0, RANDOM_FITLER_COUNT),
+  [FilterType.RANDOM]: (pictures) => pictures.slice().sort(() => Math.random() - RANDOM_OFFSET).slice(0, RANDOM_FILTER_COUNT),
   [FilterType.DISCUSSED]: (pictures) => pictures.slice().sort((item1, item2) => item2.comments.length - item1.comments.length)
 };
 
