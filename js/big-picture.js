@@ -98,6 +98,7 @@ const onPictureClick = (evt, pictures) => {
     const pictureElements = Array.from(document.querySelectorAll('.picture'));
     const index = pictureElements.indexOf(linkElement);
 
+
     openBigPicture(index, pictures);
   }
 };
